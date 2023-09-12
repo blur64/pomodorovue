@@ -4,6 +4,11 @@ const initialTimersSettings = [
   { id: 2, name: "Long Break", timeInMinutes: 10 },
 ];
 
+const soundSettings = {
+  path: require("./assets/clockAlarm.mp3"),
+  volume: 0.5,
+}
+
 function getTimersSettings() {
   return (
     JSON.parse(localStorage.getItem("timersSettings")) || initialTimersSettings
@@ -14,4 +19,8 @@ function saveTimersSettings(newSettings) {
   localStorage.setItem("timersSettings", JSON.stringify(newSettings));
 }
 
-export { getTimersSettings, saveTimersSettings };
+function getSoundSettings() {
+  return soundSettings;
+}
+
+export { getTimersSettings, saveTimersSettings, getSoundSettings };

@@ -24,20 +24,10 @@
               :timersData="timersIdsAndNames"
             />
             <the-timer
-              @finished="playSound"
+              @finished="notifyUserTimeIsUp"
               :startTimeInMinutes="currentTimer.timeInMinutes"
             />
           </v-col>
-        </v-row>
-        <v-row>
-          <v-list lines="one">
-            <v-list-item
-              v-for="n in 3"
-              :key="n"
-              :title="'Item ' + n"
-              subtitle="Lorem ipsum dolor sit amet consectetur adipisicing elit"
-            ></v-list-item>
-          </v-list>
         </v-row>
       </v-container>
     </v-main>
@@ -49,7 +39,11 @@ import TheTimerNavbar from "./components/TheTimerNavbar.vue";
 import TheTimer from "./components/TheTimer.vue";
 import TheSettings from "./components/TheSettings.vue";
 
-import { getTimersSettings, saveTimersSettings } from "./api.js";
+import {
+  getTimersSettings,
+  saveTimersSettings,
+  getSoundSettings,
+} from "./api.js";
 
 export default {
   name: "App",
@@ -63,9 +57,12 @@ export default {
   data() {
     return {
       isSettingsOpened: false,
-      currentTimerId: 0,
+
       timers: [],
       timersIdsAndNames: [],
+      currentTimerId: 0,
+
+      sound: {},
     };
   },
 
@@ -90,10 +87,8 @@ export default {
       saveTimersSettings(this.timers);
     },
 
-    playSound() {
-      const sound = new Audio(require("./assets/clockAlarm.mp3"));
-      sound.volume = 0.5;
-      sound.play();
+    notifyUserTimeIsUp() {
+      this.sound.play();
     },
   },
 
@@ -104,6 +99,10 @@ export default {
       id: timer.id,
       name: timer.name,
     }));
+
+    const soundSettings = getSoundSettings();
+    this.sound = new Audio(soundSettings.path);
+    this.sound.volume = soundSettings.volume;
   },
 };
 </script>

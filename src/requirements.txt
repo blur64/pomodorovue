@@ -1,7 +1,10 @@
 1. When user changes timer type, past timer is resetted
 2. In settings user can change minutes of all timers
 3. When user changes minutes of started timer, the timer is resetted
-4. User can start the timer using TimersPlan UI
-5. If user stops or resets the timer or changes TimerType when TimersPlan is active, the current PlanItem is stopped
-6. User can reset PlanItem only using PlanItem UI
-7. 
+4. When the timer is finished, it can automatically run another type of itself. This behavior can be changed in settings
+5. Long breaks and short breaks automatically run by intervals. By default, short break runs after every pomodoro and 
+long break after 4 pomodoros. Theese intervals can be changed in settings. 
+
+// 1. User can start the timer using TimersPlan UI
+// 2. If user stops or resets the timer or changes TimerType when TimersPlan is active, the current PlanItem is stopped
+// 3. User can reset PlanItem only using PlanItem UI 
