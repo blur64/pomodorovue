@@ -11,7 +11,9 @@
 
               <the-settings
                 :timersSettings="timers"
+                :autoStartingSettings="autoStartingSettings"
                 @timerTimeChanged="changeTimerTime"
+                @autoStartingSettingsChanged="changeAutoStartingSettings"
                 @allSettingsConfigured="closeSettingsAndSaveTimersUsingApi"
               />
             </v-dialog>
@@ -66,8 +68,11 @@ export default {
 
       sound: {},
 
-      autoStart: false,
-      longBreakInterval: 0,
+      autoStartingSettings: {
+        autoStart: false,
+        longBreakInterval: 0,
+      },
+
       finishedPomodorosCount: 0,
     };
   },
@@ -79,22 +84,33 @@ export default {
   },
 
   methods: {
+    changeAutoStartingSettings(newAutoStartingSettings) {
+      Object.assign(this.autoStartingSettings, newAutoStartingSettings);
+    },
+
+    defineNextTimer() {
+      if (this.currentTimerId === 0) {
+        this.finishedPomodorosCount += 1;
+
+        if (
+          this.finishedPomodorosCount %
+            this.autoStartingSettings.longBreakInterval ===
+          0
+        ) {
+          this.currentTimerId = 2;
+        } else {
+          this.currentTimerId = 1;
+        }
+      } else {
+        this.currentTimerId = 0;
+      }
+    },
+
     handleTimerFinished(startTimerCallback) {
       this.notifyUserTimeIsUp();
 
-      if (this.autoStart) {
-        if (this.currentTimerId === 0) {
-          this.finishedPomodorosCount += 1;
-
-          if (this.finishedPomodorosCount % 2 === 0) {
-            this.currentTimerId = 2;
-          } else {
-            this.currentTimerId = 1;
-          }
-        } else {
-          this.currentTimerId = 0;
-        }
-
+      if (this.autoStartingSettings.autoStart) {
+        this.defineNextTimer();
         this.$nextTick(startTimerCallback);
       }
     },
@@ -129,9 +145,7 @@ export default {
     this.sound = new Audio(soundSettings.path);
     this.sound.volume = soundSettings.volume;
 
-    const autoStartingSettings = getAutoStartingSettings();
-    this.longBreakInterval = autoStartingSettings.longBreakInterval;
-    this.autoStart = autoStartingSettings.autoStart;
+    this.autoStartingSettings = getAutoStartingSettings();
   },
 };
 </script>

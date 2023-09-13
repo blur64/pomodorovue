@@ -44,7 +44,6 @@ export default {
     return {
       timerIntervalId: "",
       currentTimeInSeconds: 0,
-      // startTimeInMinutes: 0,
     };
   },
 
@@ -103,7 +102,6 @@ export default {
     },
 
     initTimerSettings() {
-      // this.startTimeInMinutes = this.initialStartTimeInMinutes;
       this.currentTimeInSeconds = 60 * this.startTimeInMinutes;
     },
   },

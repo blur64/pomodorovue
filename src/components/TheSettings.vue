@@ -9,6 +9,22 @@
       </div>
     </v-card-item>
 
+    <v-card-item>
+      <div class="d-flex justify-space-between">
+        <div>Auto start</div>
+        <v-switch v-model="newAutoStartFlag" hide-details />
+      </div>
+      <div class="d-flex align-center justify-space-between">
+        <label for="interval">Long break interval</label>
+        <input
+          id="interval"
+          type="number"
+          class="time-input"
+          v-model.number="newLongBreakInterval"
+        />
+      </div>
+    </v-card-item>
+
     <v-card-actions>
       <v-btn @click="saveChanges">save and close</v-btn>
     </v-card-actions>
@@ -16,7 +32,7 @@
 </template>
 
 <script>
-import TimerTimeInput from './TimerTimeInput.vue';
+import TimerTimeInput from "./TimerTimeInput.vue";
 
 export default {
   components: {
@@ -25,13 +41,14 @@ export default {
 
   emits: {
     timerTimeChanged: (timerId, time) => {
-      if (typeof timerId === 'number' && typeof time === 'number') {
+      if (typeof timerId === "number" && typeof time === "number") {
         return true;
       }
 
       return false;
     },
     allSettingsConfigured: () => true,
+    autoStartingSettingsChanged: null,
   },
 
   props: {
@@ -40,11 +57,17 @@ export default {
       required: false,
       default: () => [],
     },
+    autoStartingSettings: {
+      type: Object,
+      required: false,
+    },
   },
 
   data() {
     return {
       newTimes: [],
+      newAutoStartFlag: false,
+      newLongBreakInterval: 0,
     };
   },
 
@@ -87,11 +110,16 @@ export default {
         }
 
         if (newTime !== initialTime) {
-          this.$emit('timerTimeChanged', timerSettings.id, newTime);
+          this.$emit("timerTimeChanged", timerSettings.id, newTime);
         }
       });
 
-      this.$emit('allSettingsConfigured');
+      this.$emit("autoStartingSettingsChanged", {
+        autoStart: this.newAutoStartFlag,
+        longBreakInterval: this.newLongBreakInterval,
+      });
+
+      this.$emit("allSettingsConfigured");
     },
   },
 
@@ -100,6 +128,9 @@ export default {
       timerId: timerSettings.id,
       time: timerSettings.timeInMinutes,
     }));
+
+    this.newAutoStartFlag = this.autoStartingSettings.autoStart;
+    this.newLongBreakInterval = this.autoStartingSettings.longBreakInterval;
   },
 };
 </script>
