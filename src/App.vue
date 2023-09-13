@@ -24,8 +24,9 @@
               :timersData="timersIdsAndNames"
             />
             <the-timer
-              @finished="notifyUserTimeIsUp"
+              @finished="handleTimerFinished"
               :startTimeInMinutes="currentTimer.timeInMinutes"
+              :currentTimerId="currentTimerId"
             />
           </v-col>
         </v-row>
@@ -43,6 +44,7 @@ import {
   getTimersSettings,
   saveTimersSettings,
   getSoundSettings,
+  getAutoStartingSettings,
 } from "./api.js";
 
 export default {
@@ -63,6 +65,10 @@ export default {
       currentTimerId: 0,
 
       sound: {},
+
+      autoStart: false,
+      longBreakInterval: 0,
+      finishedPomodorosCount: 0,
     };
   },
 
@@ -73,6 +79,26 @@ export default {
   },
 
   methods: {
+    handleTimerFinished(startTimerCallback) {
+      this.notifyUserTimeIsUp();
+
+      if (this.autoStart) {
+        if (this.currentTimerId === 0) {
+          this.finishedPomodorosCount += 1;
+
+          if (this.finishedPomodorosCount % 2 === 0) {
+            this.currentTimerId = 2;
+          } else {
+            this.currentTimerId = 1;
+          }
+        } else {
+          this.currentTimerId = 0;
+        }
+
+        this.$nextTick(startTimerCallback);
+      }
+    },
+
     changeTimerTime(timerId, newTime) {
       const timer = this.findTimer(timerId);
       timer.timeInMinutes = newTime;
@@ -94,7 +120,6 @@ export default {
 
   created() {
     this.timers = getTimersSettings();
-
     this.timersIdsAndNames = this.timers.map((timer) => ({
       id: timer.id,
       name: timer.name,
@@ -103,6 +128,10 @@ export default {
     const soundSettings = getSoundSettings();
     this.sound = new Audio(soundSettings.path);
     this.sound.volume = soundSettings.volume;
+
+    const autoStartingSettings = getAutoStartingSettings();
+    this.longBreakInterval = autoStartingSettings.longBreakInterval;
+    this.autoStart = autoStartingSettings.autoStart;
   },
 };
 </script>

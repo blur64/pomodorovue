@@ -7,7 +7,12 @@ const initialTimersSettings = [
 const soundSettings = {
   path: require("./assets/clockAlarm.mp3"),
   volume: 0.5,
-}
+};
+
+const initialAutoStartingSettings = {
+  autoStart: true,
+  longBreakInterval: 2,
+};
 
 function getTimersSettings() {
   return (
@@ -23,4 +28,11 @@ function getSoundSettings() {
   return soundSettings;
 }
 
-export { getTimersSettings, saveTimersSettings, getSoundSettings };
+function getAutoStartingSettings() {
+  return initialAutoStartingSettings;
+}
+
+export {
+  saveTimersSettings, getTimersSettings,
+  getSoundSettings, getAutoStartingSettings
+};

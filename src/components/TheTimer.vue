@@ -34,12 +34,17 @@ export default {
       required: true,
       default: 0,
     },
+    currentTimerId: {
+      type: Number,
+      required: true,
+    },
   },
 
   data() {
     return {
-      timerIntervalId: '',
+      timerIntervalId: "",
       currentTimeInSeconds: 0,
+      // startTimeInMinutes: 0,
     };
   },
 
@@ -64,7 +69,7 @@ export default {
   methods: {
     zeroStartFormat(number) {
       if (-10 < number && number < 10) {
-        return '0' + number;
+        return "0" + number;
       }
 
       return number;
@@ -73,21 +78,21 @@ export default {
     stopTicking() {
       if (this.timerIntervalId) {
         clearInterval(this.timerIntervalId);
-        this.timerIntervalId = '';
+        this.timerIntervalId = "";
       }
     },
 
     tick() {
       if (this.currentTimeInSeconds === 0) {
         this.stopTicking();
-        this.$emit('finished');
+        this.$emit("finished", this.startTicking);
       } else {
         this.currentTimeInSeconds -= 1;
       }
     },
 
     startTicking() {
-      if (!this.timerIntervalId) {
+      if (!this.timerIntervalId && this.currentTimeInSeconds) {
         this.timerIntervalId = setInterval(this.tick, 1000);
       }
     },
@@ -98,6 +103,7 @@ export default {
     },
 
     initTimerSettings() {
+      // this.startTimeInMinutes = this.initialStartTimeInMinutes;
       this.currentTimeInSeconds = 60 * this.startTimeInMinutes;
     },
   },
@@ -107,6 +113,9 @@ export default {
   },
 
   watch: {
+    currentTimerId() {
+      this.resetTimer();
+    },
     startTimeInMinutes() {
       this.resetTimer();
     },

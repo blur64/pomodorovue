@@ -1,11 +1,11 @@
 <template>
   <div>
     <v-card>
-      <v-tabs grow>
+      <v-tabs grow v-model="tabValue">
         <v-tab
           v-for="timerData of timersData"
           :key="timerData.id"
-          @click="$emit('update:modelValue', timerData.id)"
+          :value="timerData.id"
           >{{ timerData.name }}</v-tab
         >
       </v-tabs>
@@ -27,6 +27,26 @@ export default {
     modelValue: {
       type: Number,
       required: false,
+    },
+  },
+
+  data() {
+    return {
+      tabValue: 0,
+    };
+  },
+
+  created() {
+    this.tabValue = this.modelValue;
+  },
+
+  watch: {
+    tabValue(newValue) {
+      this.$emit("update:modelValue", newValue);
+    },
+
+    modelValue() {
+      this.tabValue = this.modelValue;
     },
   },
 };
