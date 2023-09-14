@@ -1,26 +1,34 @@
 <template>
   <v-card title="Settings" max-width="300px">
     <v-card-item>
-      <div v-for="timerSettings of timersSettings" :key="timerSettings.id">
-        <timer-time-input
-          :timerSettings="timerSettings"
-          @timeChanged="updateNewTime"
+      <div
+        v-for="timerSettings of timersSettings"
+        :key="timerSettings.id"
+        class="d-flex align-center justify-space-between"
+      >
+        <label>{{ timerSettings.name }}</label>
+        <text-field-wrapper
+          @valueChanged="updateNewTime"
+          :initialValue="timerSettings.timeInMinutes"
+          :itemId="timerSettings.id"
+          type="number"
+          min="0"
+          step="5"
         />
       </div>
     </v-card-item>
 
     <v-card-item>
       <div class="d-flex justify-space-between">
-        <div>Auto start</div>
+        <label>Auto start</label>
         <v-switch v-model="newAutoStartFlag" hide-details />
       </div>
       <div class="d-flex align-center justify-space-between">
-        <label for="interval">Long break interval</label>
-        <input
-          id="interval"
-          type="number"
-          class="time-input"
+        <label>Long break interval</label>
+        <v-text-field
           v-model.number="newLongBreakInterval"
+          type="number"
+          min="2"
         />
       </div>
     </v-card-item>
@@ -32,11 +40,11 @@
 </template>
 
 <script>
-import TimerTimeInput from "./TimerTimeInput.vue";
+import TextFieldWrapper from "./TextFieldWrapper.vue";
 
 export default {
   components: {
-    TimerTimeInput,
+    TextFieldWrapper,
   },
 
   emits: {
@@ -74,7 +82,7 @@ export default {
   methods: {
     updateNewTime(timerId, newTime) {
       const newTimeEntry = this.findNewTimeEntry(timerId);
-      newTimeEntry.time = newTime;
+      newTimeEntry.time = +newTime;
     },
 
     validateTime(time) {
@@ -134,13 +142,3 @@ export default {
   },
 };
 </script>
-
-<style>
-.time-input {
-  width: 68px;
-  border: 1px solid black;
-  border-radius: 4px;
-  padding: 6px;
-  margin: 2px;
-}
-</style>
