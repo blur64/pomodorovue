@@ -7,9 +7,9 @@
     </v-card-item>
 
     <v-card-actions class="d-flex justify-center align-center">
-      <v-btn @click="startTicking">Start</v-btn>
-      <v-btn @click="stopTicking">Stop</v-btn>
-      <v-btn @click="resetTimer">Reset</v-btn>
+      <v-btn @click="startTicking" prepend-icon="mdi-play">Start</v-btn>
+      <v-btn @click="stopTicking" prepend-icon="mdi-stop">Stop</v-btn>
+      <v-btn @click="resetTimer" prepend-icon="mdi-restore">Reset</v-btn>
     </v-card-actions>
 
     <v-card-item>

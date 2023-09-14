@@ -1,10 +1,10 @@
 <template>
-  <v-card title="Settings" max-width="300px">
-    <v-card-item>
+  <v-card subtitle="Settings" max-width="300px">
+    <v-card-item title="Times">
       <div
         v-for="timerSettings of timersSettings"
         :key="timerSettings.id"
-        class="d-flex align-center justify-space-between"
+        class="d-flex align-center justify-space-between pb-2"
       >
         <label>{{ timerSettings.name }}</label>
         <v-responsive max-width="92">
@@ -21,7 +21,7 @@
       </div>
     </v-card-item>
 
-    <v-card-item>
+    <v-card-item title="Auto starting">
       <div class="d-flex align-center justify-space-between">
         <label>Auto start</label>
         <v-responsive max-width="92">
@@ -35,13 +35,14 @@
             v-model.number="newLongBreakInterval"
             type="number"
             min="2"
+            hide-details
           />
         </v-responsive>
       </div>
     </v-card-item>
 
-    <v-card-actions>
-      <v-btn @click="saveChanges">save and close</v-btn>
+    <v-card-actions class="d-flex align-center justify-center px-2">
+      <v-btn @click="saveChanges" variant="tonal" block>save and close</v-btn>
     </v-card-actions>
   </v-card>
 </template>

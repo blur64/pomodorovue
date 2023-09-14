@@ -6,6 +6,7 @@
           v-for="timerData of timersData"
           :key="timerData.id"
           :value="timerData.id"
+          elevation="0"
           >{{ timerData.name }}</v-tab
         >
       </v-tabs>
