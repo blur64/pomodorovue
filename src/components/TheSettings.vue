@@ -7,29 +7,36 @@
         class="d-flex align-center justify-space-between"
       >
         <label>{{ timerSettings.name }}</label>
-        <text-field-wrapper
-          @valueChanged="updateNewTime"
-          :initialValue="timerSettings.timeInMinutes"
-          :itemId="timerSettings.id"
-          type="number"
-          min="0"
-          step="5"
-        />
+        <v-responsive max-width="92">
+          <text-field-wrapper
+            @valueChanged="updateNewTime"
+            :initialValue="timerSettings.timeInMinutes"
+            :itemId="timerSettings.id"
+            hide-details
+            type="number"
+            min="0"
+            step="5"
+          />
+        </v-responsive>
       </div>
     </v-card-item>
 
     <v-card-item>
-      <div class="d-flex justify-space-between">
+      <div class="d-flex align-center justify-space-between">
         <label>Auto start</label>
-        <v-switch v-model="newAutoStartFlag" hide-details />
+        <v-responsive max-width="92">
+          <v-switch v-model="newAutoStartFlag" hide-details />
+        </v-responsive>
       </div>
       <div class="d-flex align-center justify-space-between">
         <label>Long break interval</label>
-        <v-text-field
-          v-model.number="newLongBreakInterval"
-          type="number"
-          min="2"
-        />
+        <v-responsive max-width="92">
+          <v-text-field
+            v-model.number="newLongBreakInterval"
+            type="number"
+            min="2"
+          />
+        </v-responsive>
       </div>
     </v-card-item>
 
