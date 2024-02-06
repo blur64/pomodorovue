@@ -23,6 +23,8 @@
 </template>
 
 <script>
+import Timer from "@/models/Timer";
+
 export default {
   emits: {
     finished: null,
@@ -42,8 +44,15 @@ export default {
 
   data() {
     return {
-      timerIntervalId: "",
       currentTimeInSeconds: 0,
+      timer: new Timer({
+        duration: {
+          minutes: this.startTimeInMinutes,
+          seconds: 0,
+        },
+        onSecondTick: this.tick,
+        onFinish: this.onFinish,
+      }),
     };
   },
 
@@ -75,47 +84,51 @@ export default {
     },
 
     stopTicking() {
-      if (this.timerIntervalId) {
-        clearInterval(this.timerIntervalId);
-        this.timerIntervalId = "";
-      }
+      this.timer.stop();
     },
 
-    tick() {
-      if (this.currentTimeInSeconds === 0) {
-        this.stopTicking();
-        this.$emit("finished", this.startTicking);
-      } else {
-        this.currentTimeInSeconds -= 1;
-      }
+    tick({ minutes, seconds }) {
+      this.currentTimeInSeconds = minutes * 60 + seconds;
     },
 
     startTicking() {
-      if (!this.timerIntervalId && this.currentTimeInSeconds) {
-        this.timerIntervalId = setInterval(this.tick, 1000);
+      if (!this.timer.isActive && this.currentTimeInSeconds) {
+        this.timer.start();
       }
     },
 
-    resetTimer() {
-      this.stopTicking();
-      this.initTimerSettings();
+    onFinish() {
+      this.$emit("finished", this.startTicking);
     },
 
-    initTimerSettings() {
+    resetTimer() {
+      this.timer.reset();
+      this.init();
+    },
+
+    init() {
       this.currentTimeInSeconds = 60 * this.startTimeInMinutes;
     },
   },
 
   created() {
-    this.initTimerSettings();
+    this.init();
   },
 
   watch: {
     currentTimerId() {
       this.resetTimer();
+      this.timer.setDuration({
+        minutes: this.startTimeInMinutes,
+        seconds: 0,
+      });
     },
     startTimeInMinutes() {
       this.resetTimer();
+      this.timer.setDuration({
+        minutes: this.startTimeInMinutes,
+        seconds: 0,
+      });
     },
   },
 };
