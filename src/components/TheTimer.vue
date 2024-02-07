@@ -93,7 +93,11 @@ export default {
 
     startTicking() {
       if (!this.timer.isActive && this.currentTimeInSeconds) {
-        this.timer.start();
+        if (this.timer.isStopped) {
+          this.timer.continue();
+        } else {
+          this.timer.start();
+        }
       }
     },
 

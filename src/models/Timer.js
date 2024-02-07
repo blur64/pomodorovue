@@ -41,6 +41,10 @@ export default class Timer {
     return this._state === timerStates.ACTIVE;
   }
 
+  get isStopped() {
+    return this._state === timerStates.STOPPED;
+  }
+
   get duration() {
     return this._duration;
   }
@@ -59,7 +63,6 @@ export default class Timer {
   _tick() {
     if (this.remainingMilliseconds <= 0) {
       this.finish();
-      this._onFinish();
       return;
     }
     this._onSecondTick(this._extractTimeParts(this.remainingMilliseconds));
@@ -118,6 +121,7 @@ export default class Timer {
   finish() {
     if (this._state === timerStates.ACTIVE) {
       this._stopTicking();
+      this._onFinish();
       this._state = timerStates.FINISHED;
     }
   }
