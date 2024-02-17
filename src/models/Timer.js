@@ -7,18 +7,17 @@ const timerStates = {
 
 /**
  * Model representing a timer with its own tick mechanism.
- * @todo Do tick mechanism more accurate (time of next tick shouldn't be 
- * constant, it should be calculated). Use setTimeout() html api.
  * @todo Add checks in methods. For example, remainingMilliseconds() returns
  * a value even if the timer is finished or didn't started.
  */
 export default class Timer {
   _initialDuration = 0;
   _duration = 0;
-  _startTime = 0;
+  _launchTime = 0;
   _onSecondTick = null;
   _onFinish = null;
-  _intervalId = 0;
+  _timeoutId = 0;
+  _baseTickInterval = 1000;
   _state = timerStates.READY;
 
   constructor({ duration: { seconds, minutes }, onSecondTick, onFinish }) {
@@ -56,8 +55,12 @@ export default class Timer {
    */
   get remainingMilliseconds() {
     return this.isActive ?
-      this._duration - (Date.now() - this._startTime) :
+      this._duration - this._calcPassedMiliseconds() :
       this._duration;
+  }
+
+  _calcPassedMiliseconds() {
+    return Date.now() - this._launchTime;
   }
 
   _tick() {
@@ -66,6 +69,13 @@ export default class Timer {
       return;
     }
     this._onSecondTick(this._extractTimeParts(this.remainingMilliseconds));
+    this._timeoutId = setTimeout(() => this._tick(), this._calcTickInterval());
+  }
+
+  _calcTickInterval() {
+    const drift = this._calcPassedMiliseconds() % this._baseTickInterval;
+    const tickIntervalAffectedByDrift = this._baseTickInterval - drift;
+    return tickIntervalAffectedByDrift;
   }
 
   _extractTimeParts(milliseconds) {
@@ -77,18 +87,18 @@ export default class Timer {
   }
 
   _stopTicking() {
-    clearInterval(this._intervalId);
-    this._intervalId = 0;
+    clearTimeout(this._timeoutId);
+    this._timeoutId = 0;
   }
 
-  _run() {
-    this._startTime = Date.now();
-    this._intervalId = setInterval(() => this._tick(), 1000);
+  _launch() {
+    this._launchTime = Date.now();
+    this._timeoutId = setTimeout(() => this._tick(), this._baseTickInterval);
   }
 
   start() {
     if (this._state === timerStates.READY) {
-      this._run();
+      this._launch();
       this._state = timerStates.ACTIVE;
     }
   }
@@ -103,7 +113,7 @@ export default class Timer {
 
   continue() {
     if (this._state === timerStates.STOPPED) {
-      this._run();
+      this._launch();
       this._state = timerStates.ACTIVE;
     }
   }
