@@ -55,16 +55,17 @@ export default class Timer {
    */
   get remainingMilliseconds() {
     return this.isActive ?
-      this._duration - this._calcPassedMiliseconds() :
+      this._duration - this._calcPassedMilliseconds() :
       this._duration;
   }
 
-  _calcPassedMiliseconds() {
+  _calcPassedMilliseconds() {
     return Date.now() - this._launchTime;
   }
 
   _tick() {
     if (this.remainingMilliseconds <= 0) {
+      this._onSecondTick(this._extractTimeParts(0));
       this.finish();
       return;
     }
@@ -73,13 +74,14 @@ export default class Timer {
   }
 
   _calcTickInterval() {
-    const drift = this._calcPassedMiliseconds() % this._baseTickInterval;
+    const drift = this._calcPassedMilliseconds() % this._baseTickInterval;
     const tickIntervalAffectedByDrift = this._baseTickInterval - drift;
     return tickIntervalAffectedByDrift;
   }
 
   _extractTimeParts(milliseconds) {
-    const time = new Date(milliseconds);
+    const roundedMilliseconds = Math.round(milliseconds / 1000) * 1000;
+    const time = new Date(roundedMilliseconds);
     return {
       seconds: time.getSeconds(),
       minutes: time.getMinutes()
@@ -105,7 +107,7 @@ export default class Timer {
 
   stop() {
     if (this._state === timerStates.ACTIVE) {
-      this._duration = this.remainingMilliseconds;
+      this._duration = Math.ceil(this.remainingMilliseconds / 1000) * 1000;
       this._stopTicking();
       this._state = timerStates.STOPPED;
     }
