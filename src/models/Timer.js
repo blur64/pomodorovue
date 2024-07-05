@@ -14,11 +14,12 @@ export default class Timer {
   _initialDuration = 0;
   _duration = 0;
   _launchTime = 0;
-  _onSecondTick = null;
-  _onFinish = null;
   _timeoutId = 0;
   _baseTickInterval = 1000;
   _state = timerStates.READY;
+
+  _onSecondTick () {}
+  _onFinish () {}
 
   constructor({ duration: { seconds, minutes }, onSecondTick, onFinish }) {
     this._initialDuration = minutes * 60 * 1000 + seconds * 1000;
@@ -41,6 +42,10 @@ export default class Timer {
   }
 
   get isStopped() {
+    return this._state === timerStates.STOPPED;
+  }
+
+  get isReady() {
     return this._state === timerStates.STOPPED;
   }
 
@@ -98,43 +103,60 @@ export default class Timer {
     this._timeoutId = setTimeout(() => this._tick(), this._baseTickInterval);
   }
 
+  _checkState(state) {
+    if (state && Object.values(timerStates).includes(state)) { 
+      return;
+    }
+
+    throw new Error('Incorrect timer state name');
+  }
+
+  _setState(state) {
+    this._checkState(state);
+
+    this._state = state;
+  }
+
   start() {
-    if (this._state === timerStates.READY) {
+    if (this.isReady) {
       this._launch();
-      this._state = timerStates.ACTIVE;
+      this._setState(timerStates.ACTIVE);
     }
   }
 
   stop() {
-    if (this._state === timerStates.ACTIVE) {
+    if (this.isActive) {
       this._duration = Math.ceil(this.remainingMilliseconds / 1000) * 1000;
       this._stopTicking();
-      this._state = timerStates.STOPPED;
+      this._setState(timerStates.STOPPED);
     }
   }
 
   continue() {
-    if (this._state === timerStates.STOPPED) {
+    if (this.isStopped) {
       this._launch();
-      this._state = timerStates.ACTIVE;
+      this._setState(timerStates.ACTIVE);
     }
   }
 
   reset() {
-    if (this._state !== timerStates.READY) {
-      if (this._state !== timerStates.FINISHED) {
-        this._stopTicking();
-      }
-      this._duration = this._initialDuration;
-      this._state = timerStates.READY;
+    if (this.isReady) { 
+      return; 
     }
+
+    if (!this.isFinished) { 
+      this._stopTicking(); 
+    }
+
+    this._duration = this._initialDuration;
+    this._setState(timerStates.READY);
   }
 
   finish() {
-    if (this._state === timerStates.ACTIVE) {
+    if (this.isActive) {
       this._stopTicking();
       this._onFinish();
-      this._state = timerStates.FINISHED;
+      this._setState(timerStates.FINISHED);
     }
   }
 
