@@ -11,20 +11,21 @@ const timerStates = {
  * a value even if the timer is finished or didn't started.
  */
 export default class Timer {
-  _initialDuration = 0;
+  _duration = 0;
   _millisecondsLeftToWork = 0;
   _launchTime = 0;
   _timeoutId = 0;
   _baseTickInterval = 1000;
   _state = timerStates.READY;
-
+  
   _onSecondTick = null;
   _onFinish = null;
 
   constructor({ duration, onSecondTick, onFinish }) {
     this._validateParams({ duration, onSecondTick, onFinish });
 
-    this.setDuration(duration);
+    this._duration = duration.minutes * 60 * 1000 + duration.seconds * 1000;
+    this._millisecondsLeftToWork = this._duration;
     this._onSecondTick = onSecondTick ?? function () {};
     this._onFinish = onFinish ?? function () {};
   }
@@ -39,18 +40,20 @@ export default class Timer {
     return Date.now() - this._launchTime;
   }
 
-  _setState(state) {
-    this._checkState(state);
-
-    this._state = state;
+  _toActive() {
+    this._state = timerStates.ACTIVE;
   }
 
-  _checkState(state) {
-    if (state && Object.values(timerStates).includes(state)) { 
-      return;
-    }
+  _toStopped() {
+    this._state = timerStates.STOPPED;
+  }
 
-    throw new Error('Incorrect timer state name');
+  _toReady() {
+    this._state = timerStates.READY;
+  }
+
+  _toFinished() {
+    this._state = timerStates.FINISHED;
   }
 
   _validateParams({ duration, onSecondTick, onFinish }) {
@@ -117,18 +120,13 @@ export default class Timer {
   }
 
   get isReady() {
-    return this._state === timerStates.STOPPED;
-  }
-
-  setDuration({ seconds, minutes }) {
-    this._initialDuration = minutes * 60 * 1000 + seconds * 1000;
-    this._millisecondsLeftToWork = this._initialDuration;
+    return this._state === timerStates.READY;
   }
 
   start() {
     if (this.isReady) {
       this._launch();
-      this._setState(timerStates.ACTIVE); 
+      this._toActive();
     }
   }
 
@@ -136,14 +134,14 @@ export default class Timer {
     if (this.isActive) {
       this._millisecondsLeftToWork = Math.ceil(this._remainingMilliseconds / 1000) * 1000;
       this._stopTicking();
-      this._setState(timerStates.STOPPED);
+      this._toStopped();
     }
   }
 
   continue() {
     if (this.isStopped) {
       this._launch();
-      this._setState(timerStates.ACTIVE);
+      this._toActive();
     }
   }
 
@@ -156,15 +154,15 @@ export default class Timer {
       this._stopTicking(); 
     }
 
-    this._millisecondsLeftToWork = this._initialDuration;
-    this._setState(timerStates.READY);
+    this._millisecondsLeftToWork = this._duration;
+    this._toReady();
   }
 
   finish() {
     if (this.isActive) {
       this._stopTicking();
       this._onFinish();
-      this._setState(timerStates.FINISHED);
+      this._toFinished();
     }
   }
 
