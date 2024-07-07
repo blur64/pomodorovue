@@ -1,9 +1,9 @@
 <template>
   <v-card class="mt-4">
     <v-card-item class="text-center">
-      <span class="text-h2"
-        >{{ minutesToDisplay }} : {{ secondsToDisplay }}</span
-      >
+      <span class="text-h2">
+        {{ minutesToDisplay }} : {{ secondsToDisplay }}
+      </span>
     </v-card-item>
 
     <v-card-actions class="d-flex justify-center align-center">
@@ -17,7 +17,7 @@
         :model-value="passedTimePercent"
         :height="6"
         color="purple"
-      ></v-progress-linear>
+      />
     </v-card-item>
   </v-card>
 </template>
@@ -36,6 +36,7 @@ export default {
       required: true,
       default: 0,
     },
+
     currentTimerId: {
       type: Number,
       required: true,
@@ -45,14 +46,7 @@ export default {
   data() {
     return {
       currentTimeInSeconds: 0,
-      timer: new Timer({
-        duration: {
-          minutes: this.startTimeInMinutes,
-          seconds: 0,
-        },
-        onSecondTick: this.tick,
-        onFinish: this.onFinish,
-      }),
+      timer: null,
     };
   },
 
@@ -93,11 +87,9 @@ export default {
 
     startTicking() {
       if (!this.timer.isActive && this.currentTimeInSeconds) {
-        if (this.timer.isStopped) {
-          this.timer.continue();
-        } else {
-          this.timer.start();
-        }
+        this.timer.isStopped
+          ? this.timer.continue()
+          : this.timer.start();
       }
     },
 
@@ -112,6 +104,14 @@ export default {
 
     init() {
       this.currentTimeInSeconds = 60 * this.startTimeInMinutes;
+      this.timer = new Timer({
+        duration: {
+          minutes: this.startTimeInMinutes,
+          seconds: 0,
+        },
+        onSecondTick: this.tick,
+        onFinish: this.onFinish,
+      });
     },
   },
 
@@ -122,17 +122,10 @@ export default {
   watch: {
     currentTimerId() {
       this.resetTimer();
-      this.timer.setDuration({
-        minutes: this.startTimeInMinutes,
-        seconds: 0,
-      });
     },
+
     startTimeInMinutes() {
       this.resetTimer();
-      this.timer.setDuration({
-        minutes: this.startTimeInMinutes,
-        seconds: 0,
-      });
     },
   },
 };
