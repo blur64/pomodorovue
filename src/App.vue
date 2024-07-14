@@ -22,13 +22,15 @@
         <v-row>
           <v-col sm="6" offset-sm="3">
             <the-timer-navbar
-              v-model="currentTimerId"
-              :timersData="timersIdsAndNames"
+              @update:selected-timer="setCurrentTimer"
+              :selected-timer="currentTimer"
+              :timers="timers"
             />
             <the-timer
               @finished="handleTimerFinished"
+              @registerTimerResetter="resetTimer = $event"
+              @registerTimerStarter="startTimer = $event"
               :startTimeInMinutes="currentTimer.timeInMinutes"
-              :currentTimerId="currentTimerId"
             />
           </v-col>
         </v-row>
@@ -63,9 +65,7 @@ export default {
       isSettingsOpened: false,
 
       timers: [],
-      timersIdsAndNames: [],
-      currentTimerId: 0,
-
+      currentTimer: null,
       sound: {},
 
       autoStartingSettings: {
@@ -74,54 +74,53 @@ export default {
       },
 
       finishedPomodorosCount: 0,
+      resetTimer: null,
+      startTimer: null,
     };
   },
 
-  computed: {
-    currentTimer() {
-      return this.timers.find((timer) => timer.id === this.currentTimerId);
-    },
-  },
-
   methods: {
+    findTimer(timerId) {
+      return this.timers.find(t => t.id === timerId);
+    },
+
+    setCurrentTimer(newVal) {
+      this.currentTimer = newVal;
+      this.$nextTick(this.resetTimer);
+    },
+
     changeAutoStartingSettings(newAutoStartingSettings) {
       Object.assign(this.autoStartingSettings, newAutoStartingSettings);
     },
 
     defineNextTimer() {
-      if (this.currentTimerId === 0) {
-        this.finishedPomodorosCount += 1;
+      let currentTimerId = 0;
 
-        if (
-          this.finishedPomodorosCount %
-            this.autoStartingSettings.longBreakInterval ===
-          0
-        ) {
-          this.currentTimerId = 2;
-        } else {
-          this.currentTimerId = 1;
-        }
-      } else {
-        this.currentTimerId = 0;
+      if (!this.currentTimer.id) {
+        this.finishedPomodorosCount += 1;
+        const isLongBreakTurn = this.finishedPomodorosCount
+          % this.autoStartingSettings.longBreakInterval;
+
+        isLongBreakTurn
+          ? currentTimerId = 2
+          : currentTimerId = 1;
       }
+
+      this.setCurrentTimer(this.findTimer(currentTimerId));
     },
 
-    handleTimerFinished(startTimerCallback) {
+    handleTimerFinished() {
       this.notifyUserTimeIsUp();
 
       if (this.autoStartingSettings.autoStart) {
         this.defineNextTimer();
-        this.$nextTick(startTimerCallback);
+        this.$nextTick(this.startTimer);
       }
     },
 
     changeTimerTime(timerId, newTime) {
       const timer = this.findTimer(timerId);
       timer.timeInMinutes = newTime;
-    },
-
-    findTimer(timerId) {
-      return this.timers.find((timer) => timer.id === timerId);
     },
 
     closeSettingsAndSaveTimersUsingApi() {
@@ -136,10 +135,7 @@ export default {
 
   created() {
     this.timers = getTimersSettings();
-    this.timersIdsAndNames = this.timers.map((timer) => ({
-      id: timer.id,
-      name: timer.name,
-    }));
+    this.setCurrentTimer(this.findTimer(0));
 
     const soundSettings = getSoundSettings();
     this.sound = new Audio(soundSettings.path);

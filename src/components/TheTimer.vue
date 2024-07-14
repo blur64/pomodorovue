@@ -26,9 +26,11 @@
 import Timer from "@/models/Timer";
 
 export default {
-  emits: {
-    finished: null,
-  },
+  emits: [
+    'finished',
+    'registerTimerResetter',
+    'registerTimerStarter'
+  ],
 
   props: {
     startTimeInMinutes: {
@@ -36,17 +38,19 @@ export default {
       required: true,
       default: 0,
     },
-
-    currentTimerId: {
-      type: Number,
-      required: true,
-    },
   },
 
   data() {
     return {
       currentTimeInSeconds: 0,
-      timer: null,
+      timer: new Timer({
+        duration: {
+          minutes: this.startTimeInMinutes,
+          seconds: 0,
+        },
+        onSecondTick: this.tick,
+        onFinish: this.onFinish,
+      }),
     };
   },
 
@@ -94,7 +98,7 @@ export default {
     },
 
     onFinish() {
-      this.$emit("finished", this.startTicking);
+      this.$emit("finished");
     },
 
     resetTimer() {
@@ -112,21 +116,14 @@ export default {
         onSecondTick: this.tick,
         onFinish: this.onFinish,
       });
+
+      this.$emit("registerTimerResetter", this.resetTimer);
+      this.$emit("registerTimerStarter", this.startTicking);
     },
   },
 
   created() {
     this.init();
-  },
-
-  watch: {
-    currentTimerId() {
-      this.resetTimer();
-    },
-
-    startTimeInMinutes() {
-      this.resetTimer();
-    },
   },
 };
 </script>

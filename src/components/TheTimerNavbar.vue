@@ -1,14 +1,19 @@
 <template>
   <div>
     <v-card>
-      <v-tabs grow v-model="tabValue">
+      <v-tabs
+        @update:model-value="$emit('update:selected-timer', $event)"
+        :model-value="selectedTimer"
+        grow
+      >
         <v-tab
-          v-for="timerData of timersData"
-          :key="timerData.id"
-          :value="timerData.id"
+          v-for="timer of timers"
+          :key="timer.id"
+          :value="timer"
           elevation="0"
-          >{{ timerData.name }}</v-tab
         >
+          {{ timer.name }}
+        </v-tab>
       </v-tabs>
     </v-card>
   </div>
@@ -16,38 +21,17 @@
 
 <script>
 export default {
-  emits: {
-    "update:modelValue": null,
-  },
+  emits: [ 'update:selected-timer' ],
 
   props: {
-    timersData: {
+    timers: {
       type: Array,
       required: true,
     },
-    modelValue: {
-      type: Number,
+
+    selectedTimer: {
+      type: Object,
       required: false,
-    },
-  },
-
-  data() {
-    return {
-      tabValue: 0,
-    };
-  },
-
-  created() {
-    this.tabValue = this.modelValue;
-  },
-
-  watch: {
-    tabValue(newValue) {
-      this.$emit("update:modelValue", newValue);
-    },
-
-    modelValue() {
-      this.tabValue = this.modelValue;
     },
   },
 };
