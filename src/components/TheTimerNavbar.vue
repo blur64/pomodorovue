@@ -2,9 +2,9 @@
   <div>
     <v-card>
       <v-tabs
-        @update:model-value="$emit('update:selected-timer', $event)"
         :model-value="selectedTimer"
         grow
+        @update:model-value="$emit('update:selected-timer', $event)"
       >
         <v-tab
           v-for="timer of timers"
@@ -21,7 +21,7 @@
 
 <script>
 export default {
-  emits: [ 'update:selected-timer' ],
+  name: "TheTimerNavbar",
 
   props: {
     timers: {
@@ -31,8 +31,17 @@ export default {
 
     selectedTimer: {
       type: Object,
-      required: false,
+      required: true,
     },
   },
+
+  emits: [ "update:selected-timer" ],
+
+  methods: {
+    some() {
+      let a = 23;
+      return 123;
+    }
+  }
 };
 </script>

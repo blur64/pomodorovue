@@ -1,36 +1,50 @@
 <template>
   <app-container>
     <v-row>
-      <v-col sm="6" offset-sm="3">
-        <v-dialog v-model="isSettingsOpened" max-width="300px">
+      <v-col
+        sm="6"
+        offset-sm="3"
+      >
+        <v-dialog
+          v-model="isSettingsOpened"
+          max-width="300px"
+        >
           <template #activator="{ props }">
-            <v-btn color="primary" v-bind="props"> Settings </v-btn>
+            <v-btn
+              color="primary"
+              v-bind="props"
+            >
+              Settings
+            </v-btn>
           </template>
 
           <the-settings
-            :timersSettings="timers"
-            :autoStartingSettings="autoStartingSettings"
-            @timerTimeChanged="changeTimerTime"
-            @autoStartingSettingsChanged="changeAutoStartingSettings"
-            @allSettingsConfigured="closeSettingsAndSaveTimersUsingApi"
+            :timers-settings="timers"
+            :auto-starting-settings="autoStartingSettings"
+            @timer-time-changed="changeTimerTime"
+            @auto-starting-settings-changed="changeAutoStartingSettings"
+            @all-settings-configured="closeSettingsAndSaveTimersUsingApi"
           />
         </v-dialog>
       </v-col>
     </v-row>
 
     <v-row>
-      <v-col sm="6" offset-sm="3">
+      <v-col
+        sm="6"
+        offset-sm="3"
+      >
         <the-timer-navbar
-          @update:selected-timer="setCurrentTimer"
           :selected-timer="currentTimer"
           :timers="timers"
+          @update:selected-timer="setCurrentTimer"
         />
 
         <the-timer
+          :start-time-in-minutes="currentTimer.timeInMinutes"
           @finished="handleTimerFinished"
-          @registerTimerResetter="resetTimer = $event"
-          @registerTimerStarter="startTimer = $event"
-          :startTimeInMinutes="currentTimer.timeInMinutes"
+          @register-timer-resetter="resetTimer = $event"
+          @register-timer-starter="startTimer = $event"
         />
       </v-col>
     </v-row>
@@ -77,6 +91,17 @@ export default {
       resetTimer: null,
       startTimer: null,
     };
+  },
+
+  created() {
+    this.timers = getTimersSettings();
+    this.setCurrentTimer(this.findTimer(0));
+
+    const soundSettings = getSoundSettings();
+    this.sound = new Audio(soundSettings.path);
+    this.sound.volume = soundSettings.volume;
+
+    this.autoStartingSettings = getAutoStartingSettings();
   },
 
   methods: {
@@ -131,17 +156,6 @@ export default {
     notifyUserTimeIsUp() {
       this.sound.play();
     },
-  },
-
-  created() {
-    this.timers = getTimersSettings();
-    this.setCurrentTimer(this.findTimer(0));
-
-    const soundSettings = getSoundSettings();
-    this.sound = new Audio(soundSettings.path);
-    this.sound.volume = soundSettings.volume;
-
-    this.autoStartingSettings = getAutoStartingSettings();
   },
 };
 </script>

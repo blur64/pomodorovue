@@ -1,14 +1,14 @@
 // Styles
-import '@mdi/font/css/materialdesignicons.css'
-import 'vuetify/styles'
+import "@mdi/font/css/materialdesignicons.css";
+import "vuetify/styles";
 
 // Vuetify
-import { createVuetify } from 'vuetify'
+import { createVuetify } from "vuetify";
 
 export default createVuetify({
   defaults: {
     VTextField: {
-      variant: 'outlined',
+      variant: "outlined",
     },
     VBtn: {
       elevation: 2,

@@ -1,20 +1,28 @@
 <template>
-  <v-text-field v-model="inputValue" v-bind="$attrs" />
+  <v-text-field
+    v-model="inputValue"
+    v-bind="$attrs"
+  />
 </template>
 
 <script>
 export default {
-  emits: {
-    valueChanged: null,
-  },
+  name: "TextFieldWrapper",
 
   props: {
     initialValue: {
       type: Number,
+      required: true,
     },
+
     itemId: {
       type: Number,
+      required: true,
     },
+  },
+
+  emits: {
+    valueChanged: null,
   },
 
   data() {

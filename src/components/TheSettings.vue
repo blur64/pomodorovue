@@ -1,5 +1,8 @@
 <template>
-  <v-card subtitle="Settings" max-width="300px">
+  <v-card
+    subtitle="Settings"
+    max-width="300px"
+  >
     <v-card-item title="Times">
       <div
         v-for="timerSettings of timersSettings"
@@ -9,13 +12,13 @@
         <label>{{ timerSettings.name }}</label>
         <v-responsive max-width="92">
           <text-field-wrapper
-            @valueChanged="updateNewTime"
-            :initialValue="timerSettings.timeInMinutes"
-            :itemId="timerSettings.id"
+            :initial-value="timerSettings.timeInMinutes"
+            :item-id="timerSettings.id"
             hide-details
             type="number"
             min="0"
             step="5"
+            @value-changed="updateNewTime"
           />
         </v-responsive>
       </div>
@@ -25,7 +28,10 @@
       <div class="d-flex align-center justify-space-between">
         <label>Auto start</label>
         <v-responsive max-width="92">
-          <v-switch v-model="newAutoStartFlag" hide-details />
+          <v-switch
+            v-model="newAutoStartFlag"
+            hide-details
+          />
         </v-responsive>
       </div>
       <div class="d-flex align-center justify-space-between">
@@ -42,7 +48,13 @@
     </v-card-item>
 
     <v-card-actions class="d-flex align-center justify-center px-2">
-      <v-btn @click="saveChanges" variant="tonal" block>save and close</v-btn>
+      <v-btn
+        variant="tonal"
+        block
+        @click="saveChanges"
+      >
+        save and close
+      </v-btn>
     </v-card-actions>
   </v-card>
 </template>
@@ -51,8 +63,24 @@
 import TextFieldWrapper from "./TextFieldWrapper.vue";
 
 export default {
+  name: "TheSettings",
+
   components: {
     TextFieldWrapper,
+  },
+
+  props: {
+    timersSettings: {
+      type: Array,
+      required: false,
+      default: () => [],
+    },
+
+    autoStartingSettings: {
+      type: Object,
+      required: true,
+      default: () => {},
+    },
   },
 
   emits: {
@@ -63,20 +91,8 @@ export default {
 
       return false;
     },
-    allSettingsConfigured: () => true,
+    allSettingsConfigured: null,
     autoStartingSettingsChanged: null,
-  },
-
-  props: {
-    timersSettings: {
-      type: Array,
-      required: false,
-      default: () => [],
-    },
-    autoStartingSettings: {
-      type: Object,
-      required: false,
-    },
   },
 
   data() {
@@ -85,6 +101,16 @@ export default {
       newAutoStartFlag: false,
       newLongBreakInterval: 0,
     };
+  },
+
+  created() {
+    this.newTimes = this.timersSettings.map((timerSettings) => ({
+      timerId: timerSettings.id,
+      time: timerSettings.timeInMinutes,
+    }));
+
+    this.newAutoStartFlag = this.autoStartingSettings.autoStart;
+    this.newLongBreakInterval = this.autoStartingSettings.longBreakInterval;
   },
 
   methods: {
@@ -137,16 +163,6 @@ export default {
 
       this.$emit("allSettingsConfigured");
     },
-  },
-
-  created() {
-    this.newTimes = this.timersSettings.map((timerSettings) => ({
-      timerId: timerSettings.id,
-      time: timerSettings.timeInMinutes,
-    }));
-
-    this.newAutoStartFlag = this.autoStartingSettings.autoStart;
-    this.newLongBreakInterval = this.autoStartingSettings.longBreakInterval;
   },
 };
 </script>

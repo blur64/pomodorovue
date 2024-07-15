@@ -7,9 +7,24 @@
     </v-card-item>
 
     <v-card-actions class="d-flex justify-center align-center">
-      <v-btn @click="startTicking" prepend-icon="mdi-play">Start</v-btn>
-      <v-btn @click="stopTicking" prepend-icon="mdi-stop">Stop</v-btn>
-      <v-btn @click="resetTimer" prepend-icon="mdi-restore">Reset</v-btn>
+      <v-btn
+        prepend-icon="mdi-play"
+        @click="startTicking"
+      >
+        Start
+      </v-btn>
+      <v-btn
+        prepend-icon="mdi-stop"
+        @click="stopTicking"
+      >
+        Stop
+      </v-btn>
+      <v-btn
+        prepend-icon="mdi-restore"
+        @click="resetTimer"
+      >
+        Reset
+      </v-btn>
     </v-card-actions>
 
     <v-card-item>
@@ -26,11 +41,7 @@
 import Timer from "@/models/Timer";
 
 export default {
-  emits: [
-    'finished',
-    'registerTimerResetter',
-    'registerTimerStarter'
-  ],
+  name: "TheTimer",
 
   props: {
     startTimeInMinutes: {
@@ -39,6 +50,12 @@ export default {
       default: 0,
     },
   },
+
+  emits: [
+    "finished",
+    "registerTimerResetter",
+    "registerTimerStarter"
+  ],
 
   data() {
     return {
@@ -70,6 +87,10 @@ export default {
 
       return percent;
     },
+  },
+
+  created() {
+    this.init();
   },
 
   methods: {
@@ -120,10 +141,6 @@ export default {
       this.$emit("registerTimerResetter", this.resetTimer);
       this.$emit("registerTimerStarter", this.startTicking);
     },
-  },
-
-  created() {
-    this.init();
   },
 };
 </script>
