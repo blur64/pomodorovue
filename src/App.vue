@@ -1,48 +1,47 @@
 <template>
-  <v-app>
-    <v-main class="mt-1">
-      <v-container>
-        <v-row>
-          <v-col sm="6" offset-sm="3">
-            <v-dialog v-model="isSettingsOpened" max-width="300px">
-              <template #activator="{ props }">
-                <v-btn color="primary" v-bind="props"> Settings </v-btn>
-              </template>
+  <app-container>
+    <v-row>
+      <v-col sm="6" offset-sm="3">
+        <v-dialog v-model="isSettingsOpened" max-width="300px">
+          <template #activator="{ props }">
+            <v-btn color="primary" v-bind="props"> Settings </v-btn>
+          </template>
 
-              <the-settings
-                :timersSettings="timers"
-                :autoStartingSettings="autoStartingSettings"
-                @timerTimeChanged="changeTimerTime"
-                @autoStartingSettingsChanged="changeAutoStartingSettings"
-                @allSettingsConfigured="closeSettingsAndSaveTimersUsingApi"
-              />
-            </v-dialog>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col sm="6" offset-sm="3">
-            <the-timer-navbar
-              @update:selected-timer="setCurrentTimer"
-              :selected-timer="currentTimer"
-              :timers="timers"
-            />
-            <the-timer
-              @finished="handleTimerFinished"
-              @registerTimerResetter="resetTimer = $event"
-              @registerTimerStarter="startTimer = $event"
-              :startTimeInMinutes="currentTimer.timeInMinutes"
-            />
-          </v-col>
-        </v-row>
-      </v-container>
-    </v-main>
-  </v-app>
+          <the-settings
+            :timersSettings="timers"
+            :autoStartingSettings="autoStartingSettings"
+            @timerTimeChanged="changeTimerTime"
+            @autoStartingSettingsChanged="changeAutoStartingSettings"
+            @allSettingsConfigured="closeSettingsAndSaveTimersUsingApi"
+          />
+        </v-dialog>
+      </v-col>
+    </v-row>
+
+    <v-row>
+      <v-col sm="6" offset-sm="3">
+        <the-timer-navbar
+          @update:selected-timer="setCurrentTimer"
+          :selected-timer="currentTimer"
+          :timers="timers"
+        />
+
+        <the-timer
+          @finished="handleTimerFinished"
+          @registerTimerResetter="resetTimer = $event"
+          @registerTimerStarter="startTimer = $event"
+          :startTimeInMinutes="currentTimer.timeInMinutes"
+        />
+      </v-col>
+    </v-row>
+  </app-container>
 </template>
 
 <script>
 import TheTimerNavbar from "./components/TheTimerNavbar.vue";
 import TheTimer from "./components/TheTimer.vue";
 import TheSettings from "./components/TheSettings.vue";
+import AppContainer from "./layouts/AppContainer.vue";
 
 import {
   getTimersSettings,
@@ -58,6 +57,7 @@ export default {
     TheTimerNavbar,
     TheTimer,
     TheSettings,
+    AppContainer,
   },
 
   data() {
