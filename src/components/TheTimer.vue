@@ -60,14 +60,7 @@ export default {
   data() {
     return {
       currentTimeInSeconds: 0,
-      timer: new Timer({
-        duration: {
-          minutes: this.startTimeInMinutes,
-          seconds: 0,
-        },
-        onSecondTick: this.tick,
-        onFinish: this.onFinish,
-      }),
+      timer: this.getTimer(),
     };
   },
 
@@ -127,9 +120,8 @@ export default {
       this.init();
     },
 
-    init() {
-      this.currentTimeInSeconds = 60 * this.startTimeInMinutes;
-      this.timer = new Timer({
+    getTimer() {
+      return new Timer({
         duration: {
           minutes: this.startTimeInMinutes,
           seconds: 0,
@@ -137,6 +129,11 @@ export default {
         onSecondTick: this.tick,
         onFinish: this.onFinish,
       });
+    },
+
+    init() {
+      this.currentTimeInSeconds = 60 * this.startTimeInMinutes;
+      this.timer = this.getTimer();
 
       this.$emit("registerTimerResetter", this.resetTimer);
       this.$emit("registerTimerStarter", this.startTicking);
