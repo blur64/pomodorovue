@@ -35,13 +35,6 @@ export default {
     },
   },
 
-  emits: [ "update:selected-timer" ],
-
-  methods: {
-    some() {
-      let a = 23;
-      return 123;
-    }
-  }
+  emits: ["update:selected-timer"],
 };
 </script>

@@ -9,8 +9,11 @@
   ],
   "parserOptions": { "parser": "@babel/eslint-parser" },
   "rules": {
+    "indent": ["error", 2],
     "semi": ["error", "always"],
     "quotes": ["error", "double"],
+    "object-curly-spacing": ["error", "always"],
+    "array-bracket-spacing": ["error", "never"],
     "padding-line-between-statements": [
       "error",
       { "blankLine": "always", "prev": "*", "next": "return" }
